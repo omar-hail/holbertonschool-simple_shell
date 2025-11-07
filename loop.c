@@ -5,6 +5,8 @@ void shell_loop(char **argv)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
+	char *cmd;
+	int i, end;
 
 	while (1)
 	{
@@ -22,10 +24,23 @@ void shell_loop(char **argv)
 		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		if (line[0] == '\0')
+		i = 0;
+		while (line[i] == ' ' || line[i] == '\t')
+			i++;
+
+		cmd = line + i;
+
+		end = strlen(cmd) - 1;
+		while (end >= 0 && (cmd[end] == ' ' || cmd[end] == '\t'))
+		{
+			cmd[end] = '\0';
+			end--;
+		}
+
+		if (cmd[0] == '\0')
 			continue;
 
-		execute_command(line, argv);
+		execute_command(cmd, argv);
 	}
 
 	free(line);
