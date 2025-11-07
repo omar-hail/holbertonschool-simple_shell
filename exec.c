@@ -4,7 +4,21 @@ int execute_command(char *line, char **argv)
 {
 	pid_t pid;
 	int status;
-	char *args[2];
+	char *args[64];
+	char *token;
+	int i = 0;
+
+	token = strtok(line, " \t");
+	if (token == NULL)
+		return (0);
+
+	while (token != NULL && i < 63)
+	{
+		args[i] = token;
+		i++;
+		token = strtok(NULL, " \t");
+	}
+	args[i] = NULL;
 
 	pid = fork();
 	if (pid == -1)
@@ -15,10 +29,7 @@ int execute_command(char *line, char **argv)
 
 	if (pid == 0)
 	{
-		args[0] = line;
-		args[1] = NULL;
-
-		if (execve(line, args, environ) == -1)
+		if (execve(args[0], args, environ) == -1)
 		{
 			perror(argv[0]);
 			exit(EXIT_FAILURE);
