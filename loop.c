@@ -1,12 +1,16 @@
 #include "shell.h"
 
-void shell_loop(char **argv)
+int shell_loop(char **argv)
 {
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
 	char *cmd;
 	int i, end;
+	int cmd_count = 0;
+	int last_status = 0;
+
+	(void)argv;
 
 	while (1)
 	{
@@ -40,8 +44,11 @@ void shell_loop(char **argv)
 		if (cmd[0] == '\0')
 			continue;
 
-		execute_command(cmd, argv);
+		cmd_count++;
+		last_status = execute_command(cmd, argv, cmd_count);
 	}
 
 	free(line);
+	return (last_status);
 }
+

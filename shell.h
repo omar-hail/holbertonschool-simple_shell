@@ -10,8 +10,8 @@
 
 extern char **environ;
 
-void shell_loop(char **argv);
-int execute_command(char *line, char **argv);
+int shell_loop(char **argv);
+int execute_command(char *line, char **argv, int cmd_count);
 
 #endif /* SHELL_H */
 

@@ -2,8 +2,11 @@
 
 int main(int argc, char **argv)
 {
+	int status;
+
 	(void)argc;
 
-	shell_loop(argv);
-	return (0);
+	status = shell_loop(argv);
+	return (status);
 }
+
