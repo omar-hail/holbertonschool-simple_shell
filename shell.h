@@ -12,6 +12,7 @@ extern char **environ;
 
 int shell_loop(char **argv);
 int execute_command(char *line, char **argv, int cmd_count);
+int handle_builtin(char *cmd);
 
 #endif /* SHELL_H */
 

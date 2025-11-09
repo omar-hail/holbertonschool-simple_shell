@@ -31,17 +31,16 @@ int shell_loop(char **argv)
 			break;
 		}
 
-		/* إزالة \n من نهاية السطر */
 		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		/* تخطي المسافات في البداية */
+		/* Skip leading spaces */
 		i = 0;
 		while (line[i] == ' ' || line[i] == '\t')
 			i++;
 		cmd = line + i;
 
-		/* إزالة المسافات في النهاية */
+		/* Trim trailing spaces */
 		end = strlen(cmd) - 1;
 		while (end >= 0 && (cmd[end] == ' ' || cmd[end] == '\t'))
 		{
@@ -52,14 +51,9 @@ int shell_loop(char **argv)
 		if (cmd[0] == '\0')
 			continue;
 
-		/* Built-in: exit */
-		if (strcmp(cmd, "exit") == 0)
-		{
-			if (isatty(STDIN_FILENO))
-				write(STDOUT_FILENO, "\n", 1);
-			free(line);
-			exit(last_status); /* ← هنا التعديل المهم */
-		}
+		/* Check for built-in commands (exit, env, etc.) */
+		if (handle_builtin(cmd))
+			continue;
 
 		cmd_count++;
 		last_status = execute_command(cmd, argv, cmd_count);
@@ -68,3 +62,4 @@ int shell_loop(char **argv)
 	free(line);
 	return (last_status);
 }
+
