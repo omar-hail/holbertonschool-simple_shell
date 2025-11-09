@@ -52,13 +52,13 @@ int shell_loop(char **argv)
 		if (cmd[0] == '\0')
 			continue;
 
-		/* ✅ built-in: exit */
+		/* Built-in: exit */
 		if (strcmp(cmd, "exit") == 0)
 		{
 			if (isatty(STDIN_FILENO))
 				write(STDOUT_FILENO, "\n", 1);
 			free(line);
-			exit(0);  /* ← استخدم exit بدل break لإنهاء البرنامج فعلاً */
+			exit(last_status); /* ← هنا التعديل المهم */
 		}
 
 		cmd_count++;
