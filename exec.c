@@ -2,16 +2,29 @@
 
 static char *find_in_path(char *cmd)
 {
-	char *path, *path_copy, *token, *full_path;
+	char *path = NULL;
+	char *path_copy;
+	char *token;
+	char *full_path;
 	size_t len_cmd, len_dir;
+	int i;
 
-	path = getenv("PATH");
+	for (i = 0; environ[i]; i++)
+	{
+		if (strncmp(environ[i], "PATH=", 5) == 0)
+		{
+			path = environ[i] + 5;
+			break;
+		}
+	}
+
 	if (!path)
 		return (NULL);
 
-	path_copy = strdup(path);
+	path_copy = malloc(strlen(path) + 1);
 	if (!path_copy)
 		return (NULL);
+	strcpy(path_copy, path);
 
 	len_cmd = strlen(cmd);
 	token = strtok(path_copy, ":");
