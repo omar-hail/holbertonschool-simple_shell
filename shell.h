@@ -9,4 +9,9 @@
 
 extern char **environ;
 
+int is_empty(char *s);
+char **split_line(char *line);
+char *find_path(char *cmd);
+
 #endif /* SHELL_H */
+

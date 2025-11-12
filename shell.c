@@ -8,8 +8,7 @@
 int is_empty(char *s)
 {
     int i;
-
-    for (i = 0; s[i] != '\0'; i++)
+    for (i = 0; s[i]; i++)
     {
         if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n')
             return (0);
@@ -56,13 +55,12 @@ char **split_line(char *line)
 }
 
 /**
- * main - Simple Shell 0.2
- *
+ * main - Simple shell 0.3
  * Return: Always 0
  */
 int main(void)
 {
-    char *line = NULL;
+    char *line = NULL, *cmd_path = NULL;
     size_t len = 0;
     ssize_t nread;
     pid_t pid;
@@ -71,7 +69,7 @@ int main(void)
 
     while (1)
     {
-        printf("#cisfun$ ");
+        printf(":) ");
         fflush(stdout);
 
         nread = getline(&line, &len, stdin);
@@ -84,14 +82,17 @@ int main(void)
         if (is_empty(line))
             continue;
 
-        /* إزالة نهاية السطر الجديدة */
-        if (line[nread - 1] == '\n')
-            line[nread - 1] = '\0';
-
         args = split_line(line);
-
-        if (args[0] == NULL)
+        if (!args[0])
         {
+            free(args);
+            continue;
+        }
+
+        cmd_path = find_path(args[0]);
+        if (!cmd_path)
+        {
+            fprintf(stderr, "./shell: 1: %s: not found\n", args[0]);
             free(args);
             continue;
         }
@@ -101,20 +102,23 @@ int main(void)
         {
             perror("fork");
             free(args);
+            free(cmd_path);
             exit(EXIT_FAILURE);
         }
 
         if (pid == 0)
         {
-            if (execve(args[0], args, environ) == -1)
+            if (execve(cmd_path, args, environ) == -1)
                 perror("./shell");
             free(args);
+            free(cmd_path);
             exit(EXIT_FAILURE);
         }
         else
         {
             wait(&status);
             free(args);
+            free(cmd_path);
         }
     }
 
