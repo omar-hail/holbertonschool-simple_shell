@@ -1,0 +1,114 @@
+.TH SIMPLE_SHELL 1 "November 2025" "Holberton School" "User Commands"
+.SH NAME
+simple_shell \- a simple UNIX command interpreter
+.SH SYNOPSIS
+.B ./hsh
+.SH DESCRIPTION
+The
+.B simple_shell
+program is a minimalist UNIX command interpreter written in C.
+It provides a basic prompt and allows the user to type and execute commands.
+The shell was created as part of the Holberton School "The Gates of Shell" project.
+
+.PP
+The shell reads commands from standard input using the getline() function,
+removes leading and trailing spaces or tabs, and interprets simple built-in commands.
+If the entered command is not a built-in, the shell attempts to locate it
+within the directories listed in the PATH environment variable.
+
+.PP
+The shell runs in both
+.B interactive
+and
+.B non-interactive
+modes.
+
+.TP
+In interactive mode, it displays the prompt
+.BR "#cisfun$ "
+and waits for user input.
+.TP
+In non-interactive mode, it reads commands from standard input until EOF is reached.
+
+.PP
+When the end-of-file (Ctrl+D) is received in interactive mode,
+the shell prints a newline and terminates gracefully.
+
+.SH BUILT-IN COMMANDS
+The shell provides the following built-in commands:
+
+.TP
+.B exit
+Terminate the shell with exit status 0.
+
+.TP
+.B env
+Display the current environment variables, one per line.
+
+.SH FEATURES
+.TP
+* Interactive prompt (#cisfun$)
+.TP
+* Removal of leading and trailing whitespace before command execution
+.TP
+* Built-in support for exit and env commands
+.TP
+* Manual search through PATH directories using access()
+.TP
+* Graceful handling of EOF (Ctrl+D)
+.TP
+* Basic error printing to standard error (for unfound commands)
+
+.SH FILES
+.TP
+.B main.c
+Program entry point. Calls the shell loop.
+.TP
+.B loop.c
+Implements the main command loop and prompt display.
+.TP
+.B builtin.c
+Handles built-in commands (exit and env).
+.TP
+.B exec.c
+Provides path searching and validation utilities.
+.TP
+.B shell.h
+Contains function prototypes and extern declarations.
+
+.SH ENVIRONMENT
+The following environment variables affect the behavior of the shell:
+
+.TP
+.B PATH
+Specifies the directories searched for executable commands.
+
+.TP
+.B environ
+A global variable used by the env command to print environment variables.
+
+.SH RETURN VALUE
+The shell returns the exit status of the last command executed.
+The builtin command "exit" always terminates with status 0.
+
+.SH EXAMPLES
+Interactive mode:
+.EX
+$ ./hsh
+#cisfun$ env
+PATH=/usr/bin:/bin
+PWD=/home/user/simple_shell
+SHLVL=1
+#cisfun$ exit
+.EE
+
+Non-interactive mode:
+.EX
+$ echo "env" | ./hsh
+PATH=/usr/bin:/bin
+PWD=/home/user/simple_shell
+SHLVL=1
+.EE
+
+.SH SEE ALSO
+sh(1), bash(1), getline(3), fork(2), execve(2), access(2)
