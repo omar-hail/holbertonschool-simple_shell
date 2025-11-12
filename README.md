@@ -84,13 +84,13 @@ Start
         ├──► Executes using fork() + execve()
         └──► Repeats until 'exit' or EOF
 ```
-📂 File Structure
-File	Description
-main.c	Entry point of the program; calls the main shell loop.
-loop.c	Contains shell_loop() and input trimming functions.
-builtin.c	Implements built-in commands (exit, env).
-exec.c	Handles PATH searching and command execution.
-shell.h	Header file with prototypes and global variables.
+| File          | Description                                            |
+| ------------- | ------------------------------------------------------ |
+| **main.c**    | Entry point of the program; calls the main shell loop. |
+| **loop.c**    | Contains `shell_loop()` and input trimming functions.  |
+| **builtin.c** | Implements built-in commands (`exit`, `env`).          |
+| **exec.c**    | Handles PATH searching and command execution.          |
+| **shell.h**   | Header file with prototypes and global variables.      |
 
 🧩 Compilation
 
