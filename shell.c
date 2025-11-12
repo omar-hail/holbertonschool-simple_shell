@@ -68,17 +68,19 @@ int main(int argc, char **argv)
 	pid_t pid;
 	int status;
 	char **args;
+
 	(void)argc;
 
 	while (1)
 	{
-		printf("($) ");
-		fflush(stdout);
+		if (isatty(STDIN_FILENO))
+			write(STDOUT_FILENO, "#cisfun$ ", 9);
 
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
 		{
-			printf("\n");
+			if (isatty(STDIN_FILENO))
+				write(STDOUT_FILENO, "\n", 1);
 			break;
 		}
 

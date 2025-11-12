@@ -3,6 +3,7 @@
 /**
  * find_path - find full path of a command using PATH variable
  * @cmd: command name (like "ls")
+ *
  * Return: full path (malloc'ed) or NULL if not found
  */
 char *find_path(char *cmd)
@@ -10,7 +11,7 @@ char *find_path(char *cmd)
 	char *path_env, *path_copy, *dir, *full_path;
 	size_t len;
 
-	/* إذا كان الأمر له مسار كامل وصالح */
+	/* إذا كان الأمر موجودًا بشكل مباشر (مثلاً /bin/ls) */
 	if (access(cmd, X_OK) == 0)
 		return (strdup(cmd));
 
