@@ -24,10 +24,6 @@ It supports both **interactive** and **non-interactive** modes.
 
 ✅ **Custom prompt:**  
 #cisfun$
-
-markdown
-نسخ الكود
-
 ✅ **Supports both modes:**
 - **Interactive:** user types commands directly in the shell.
 - **Non-interactive:** commands are piped from a file or another program.
@@ -62,22 +58,19 @@ PATH=/usr/local/bin:/usr/bin:/bin
 PWD=/home/user/simple_shell
 #cisfun$ exit
 $
+
 🔁 Non-interactive mode
-bash
-نسخ الكود
 $ echo "env" | ./hsh
 PATH=/usr/local/bin:/usr/bin:/bin
 PWD=/home/user/simple_shell
-🧱 EOF Handling
-Press Ctrl+D to exit gracefully:
 
-cpp
-نسخ الكود
+🧱 EOF Handling
+
+Press Ctrl+D to exit gracefully:
 #cisfun$ <Ctrl+D>
 $
+
 🧠 Flow of Execution
-pgsql
-نسخ الكود
 Start
  └──► main.c → calls shell_loop()
         ├──► Displays prompt (#cisfun$)
@@ -87,6 +80,7 @@ Start
         ├──► If not built-in → searches PATH
         ├──► Executes using fork() + execve()
         └──► Repeats until 'exit' or EOF
+
 📂 File Structure
 File	Description
 main.c	Entry point of the program; calls the main shell loop.
@@ -96,25 +90,20 @@ exec.c	Handles PATH searching and command execution.
 shell.h	Header file with prototypes and global variables.
 
 🧩 Compilation
-Compile the program using:
 
-bash
-نسخ الكود
+Compile the program using:
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
+
 🧪 Testing
 Interactive mode:
-bash
-نسخ الكود
 ./hsh
 #cisfun$ env
 #cisfun$ exit
+
 Non-interactive mode:
-bash
-نسخ الكود
 echo "env" | ./hsh
+
 ⚡️ Example Session
-bash
-نسخ الكود
 $ ./hsh
 #cisfun$ env
 USER=user
@@ -122,7 +111,9 @@ PATH=/usr/bin:/bin
 PWD=/home/user/simple_shell
 #cisfun$ exit
 $
+
 🧰 System Calls & Functions Used
+
 write()
 
 getline()
@@ -140,14 +131,12 @@ exit()
 environ (global variable)
 
 📄 Requirements
+
 Operating System: Ubuntu 20.04 LTS
 
 Compiler: gcc
 
 Flags:
-
-bash
-نسخ الكود
 -Wall -Werror -Wextra -pedantic -std=gnu89
 Follow Betty coding style.
 
