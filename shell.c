@@ -18,46 +18,45 @@ int is_empty(char *s)
 }
 
 /**
- * parse_line - split input line into tokens
- * @line: user input
- * Return: array of arguments (NULL terminated)
+ * split_line - split user input into arguments
+ * @line: input line
+ * Return: NULL-terminated array of arguments
  */
-char **parse_line(char *line)
+char **split_line(char *line)
 {
-    char *token;
-    char **args;
     int bufsize = 64, i = 0;
+    char **tokens = malloc(sizeof(char *) * bufsize);
+    char *token;
 
-    args = malloc(sizeof(char *) * bufsize);
-    if (!args)
+    if (!tokens)
     {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
 
-    token = strtok(line, " \t\n");
+    token = strtok(line, " \t\r\n");
     while (token != NULL)
     {
-        args[i++] = token;
+        tokens[i++] = token;
 
         if (i >= bufsize)
         {
             bufsize += 64;
-            args = realloc(args, sizeof(char *) * bufsize);
-            if (!args)
+            tokens = realloc(tokens, sizeof(char *) * bufsize);
+            if (!tokens)
             {
                 perror("realloc");
                 exit(EXIT_FAILURE);
             }
         }
-        token = strtok(NULL, " \t\n");
+        token = strtok(NULL, " \t\r\n");
     }
-    args[i] = NULL;
-    return (args);
+    tokens[i] = NULL;
+    return (tokens);
 }
 
 /**
- * main - Simple shell 0.2
+ * main - Simple Shell 0.2
  *
  * Return: Always 0
  */
@@ -85,11 +84,12 @@ int main(void)
         if (is_empty(line))
             continue;
 
-        /* إزالة \n من نهاية السطر */
+        /* إزالة نهاية السطر الجديدة */
         if (line[nread - 1] == '\n')
             line[nread - 1] = '\0';
 
-        args = parse_line(line);
+        args = split_line(line);
+
         if (args[0] == NULL)
         {
             free(args);
