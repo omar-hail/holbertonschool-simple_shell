@@ -155,3 +155,7 @@ Maximum of 5 functions per file.
 
 All header files must be include-guarded.
 
+## 💬 Conclusion
+The Simple Shell project demonstrates how a basic UNIX command interpreter works.  
+It reads user input, handles built-in commands like exit and env, and interacts with the system environment using C.  
+This project is a practical introduction to system programming and process management — simple, structured, and educational for anyone exploring how real shells operate.
