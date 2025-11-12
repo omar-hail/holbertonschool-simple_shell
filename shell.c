@@ -18,7 +18,46 @@ int is_empty(char *s)
 }
 
 /**
- * main - Simple shell 0.1
+ * parse_line - split input line into tokens
+ * @line: user input
+ * Return: array of arguments (NULL terminated)
+ */
+char **parse_line(char *line)
+{
+    char *token;
+    char **args;
+    int bufsize = 64, i = 0;
+
+    args = malloc(sizeof(char *) * bufsize);
+    if (!args)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    token = strtok(line, " \t\n");
+    while (token != NULL)
+    {
+        args[i++] = token;
+
+        if (i >= bufsize)
+        {
+            bufsize += 64;
+            args = realloc(args, sizeof(char *) * bufsize);
+            if (!args)
+            {
+                perror("realloc");
+                exit(EXIT_FAILURE);
+            }
+        }
+        token = strtok(NULL, " \t\n");
+    }
+    args[i] = NULL;
+    return (args);
+}
+
+/**
+ * main - Simple shell 0.2
  *
  * Return: Always 0
  */
@@ -29,6 +68,7 @@ int main(void)
     ssize_t nread;
     pid_t pid;
     int status;
+    char **args;
 
     while (1)
     {
@@ -42,35 +82,39 @@ int main(void)
             break;
         }
 
-        /* إزالة '\n' من نهاية السطر */
+        if (is_empty(line))
+            continue;
+
+        /* إزالة \n من نهاية السطر */
         if (line[nread - 1] == '\n')
             line[nread - 1] = '\0';
 
-        /* تجاهل المسافات أو الإدخال الفارغ */
-        if (is_empty(line))
+        args = parse_line(line);
+        if (args[0] == NULL)
+        {
+            free(args);
             continue;
+        }
 
         pid = fork();
         if (pid == -1)
         {
             perror("fork");
+            free(args);
             exit(EXIT_FAILURE);
         }
 
         if (pid == 0)
         {
-            char *argv[2];
-
-            argv[0] = line;
-            argv[1] = NULL;
-
-            if (execve(argv[0], argv, environ) == -1)
+            if (execve(args[0], args, environ) == -1)
                 perror("./shell");
+            free(args);
             exit(EXIT_FAILURE);
         }
         else
         {
             wait(&status);
+            free(args);
         }
     }
 
