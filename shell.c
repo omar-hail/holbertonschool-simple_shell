@@ -1,6 +1,23 @@
 #include "shell.h"
 
 /**
+ * is_empty - check if a string is only spaces or empty
+ * @s: string to check
+ * Return: 1 if empty, 0 otherwise
+ */
+int is_empty(char *s)
+{
+    int i;
+
+    for (i = 0; s[i] != '\0'; i++)
+    {
+        if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n')
+            return (0);
+    }
+    return (1);
+}
+
+/**
  * main - Simple shell 0.1
  *
  * Return: Always 0
@@ -16,9 +33,10 @@ int main(void)
     while (1)
     {
         printf("#cisfun$ ");
-        nread = getline(&line, &len, stdin);
+        fflush(stdout);
 
-        if (nread == -1) /* Ctrl+D */
+        nread = getline(&line, &len, stdin);
+        if (nread == -1)
         {
             printf("\n");
             break;
@@ -28,12 +46,11 @@ int main(void)
         if (line[nread - 1] == '\n')
             line[nread - 1] = '\0';
 
-        /* تجاهل إدخال فارغ */
-        if (strlen(line) == 0)
+        /* تجاهل المسافات أو الإدخال الفارغ */
+        if (is_empty(line))
             continue;
 
         pid = fork();
-
         if (pid == -1)
         {
             perror("fork");
