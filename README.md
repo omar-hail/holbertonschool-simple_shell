@@ -1,50 +1,62 @@
 # 🐚 Simple Shell (`#cisfun$`)
 
-> A minimal UNIX command interpreter written in **C**, developed as part of the **Holberton School – “The Gates of Shell”** project.  
-> It provides a simple interactive interface to execute commands, manage environment variables, and exit gracefully.
+> A lightweight UNIX command interpreter written in **C**, developed as part of the **Holberton School – “The Gates of Shell”** project.  
+> This shell provides a clean interactive interface to execute programs, handle environment variables, and exit smoothly.
 
 ---
 
 ## 🧠 Description
 
-**simple_shell** is a basic UNIX command line interpreter.  
-It reads user input, parses commands, and executes them either directly or by searching the system `PATH`.  
-It supports both **interactive** and **non-interactive** modes.
+**simple_shell** is a minimal command-line interpreter.  
+It reads user input, parses the command, resolves its executable (either by absolute path or through `$PATH`), and runs it in a child process.
 
-**Key behaviors:**
-- Uses `getline()` to read input dynamically.
-- Trims leading and trailing spaces or tabs.
-- Handles built-in commands (`exit`, `env`).
-- Manually searches for executables using the `PATH` environment variable.
-- Returns proper exit statuses and handles **EOF (Ctrl+D)** gracefully.
+It works in **interactive** and **non-interactive** modes while respecting all project constraints and the Betty coding style.
+
+**Core behaviors:**
+
+- Uses `getline()` to read commands.
+- Supports commands with or without arguments.
+- Handles built-ins (`exit`, `env`).
+- Searches for executables manually using `$PATH`.
+- Executes valid programs using `fork()` + `execve()`.
+- Returns accurate exit statuses.
+- Handles **EOF (Ctrl+D)** gracefully.
+- Works in both **pipe mode** and **terminal mode**.
 
 ---
 
 ## 🧩 Features
 
-✅ **Custom prompt:**  
-#cisfun$
-✅ **Supports both modes:**
-- **Interactive:** user types commands directly in the shell.
-- **Non-interactive:** commands are piped from a file or another program.
+### 🚀 Prompt
+Custom prompt displayed in interactive mode:
 
-✅ **Built-in commands:**
+#cisfun$
+
+### 🔀 Modes supported
+✔ **Interactive:** User types directly into the shell.  
+✔ **Non-interactive:** Commands received through pipes or files.
+
+### 🔧 Built-in commands
 
 | Command | Description |
-|----------|-------------|
-| `exit` | Terminates the shell (status 0). |
-| `env` | Prints all environment variables. |
+|--------|-------------|
+| `exit` | Exits the shell. |
+| `env`  | Prints all environment variables. |
 
-✅ **Command execution:**
+### ⚙️ Command execution
 - Reads input with `getline()`.
+- Tokenizes command + arguments.
 - Removes extra whitespace.
-- Searches for executables within directories in `$PATH` using `access()`.
-- Executes valid commands with `fork()` and `execve()`.
-- Returns the exit status of the last executed command.
+- Resolves binary paths using the directories inside `$PATH`.
+- Checks file accessibility with `access()`.
+- Executes via `fork()` and `execve()`.
+- Waits for child process using `wait()`.
 
-✅ **Error handling:**
-- Displays clear error messages when commands fail.
-- Handles **Ctrl+D** safely in interactive mode.
+### 🛡 Error handling
+- Prints clear error messages in the exact required format:
+./hsh: 1: command: not found
+- Handles invalid commands.
+- Detects EOF and exits cleanly.
 
 ---
 
@@ -53,21 +65,20 @@ It supports both **interactive** and **non-interactive** modes.
 ### 🧍 Interactive mode
 ```bash
 $ ./hsh
+#cisfun$ /bin/ls
 #cisfun$ env
-PATH=/usr/local/bin:/usr/bin:/bin
-PWD=/home/user/simple_shell
 #cisfun$ exit
 $
 ```
 🔁 Non-interactive mode
 ```
 $ echo "env" | ./hsh
-PATH=/usr/local/bin:/usr/bin:/bin
+PATH=/usr/bin:/bin
 PWD=/home/user/simple_shell
 ```
-🧱 EOF Handling
+⛔ EOF Handling
 
-Press Ctrl+D to exit gracefully:
+Press Ctrl+D to exit:
 ```
 #cisfun$ <Ctrl+D>
 $
@@ -75,39 +86,46 @@ $
 🧠 Flow of Execution
 ```
 Start
- └──► main.c → calls shell_loop()
-        ├──► Displays prompt (#cisfun$)
-        ├──► Reads input via getline()
-        ├──► Trims spaces/tabs
-        ├──► Checks for built-ins (exit, env)
-        ├──► If not built-in → searches PATH
-        ├──► Executes using fork() + execve()
-        └──► Repeats until 'exit' or EOF
+ └──► main.c → shell_loop()
+        ├──► show prompt (#cisfun$)
+        ├──► getline() input
+        ├──► trim + tokenize
+        ├──► check built-ins (exit, env)
+        ├──► resolve command path
+        ├──► fork() + execve()
+        ├──► wait() for child
+        └──► repeat until "exit" or EOF
 ```
-| File          | Description                                            |
-| ------------- | ------------------------------------------------------ |
-| **main.c**    | Entry point of the program; calls the main shell loop. |
-| **loop.c**    | Contains `shell_loop()` and input trimming functions.  |
-| **builtin.c** | Implements built-in commands (`exit`, `env`).          |
-| **exec.c**    | Handles PATH searching and command execution.          |
-| **shell.h**   | Header file with prototypes and global variables.      |
+📁 File Structure
+
+| File               | Description                                   |
+| ------------------ | --------------------------------------------- |
+| **main.c**         | Entry point; starts the shell loop.           |
+| **loop.c**         | Implements `shell_loop()` and input handling. |
+| **tokenizer.c**    | Splits input into arguments.                  |
+| **executor.c**     | Handles forking, execve, and exit status.     |
+| **path.c**         | Resolves commands using `$PATH`.              |
+| **builtins.c**     | Implements built-ins (`exit`, `env`).         |
+| **env_utils.c**    | Helpers for environment variables.            |
+| **string_utils.c** | Helper string functions.                      |
+| **errors.c**       | Formats and prints error messages.            |
+| **shell.h**        | Header file with prototypes & globals.        |
+| **AUTHORS**        | List of project contributors.                 |
 
 🧩 Compilation
-
-Compile the program using:
 ```
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
 ```
 🧪 Testing
-Interactive mode:
+Interactive:
 ```
 ./hsh
-#cisfun$ env
+#cisfun$ ls
 #cisfun$ exit
 ```
-Non-interactive mode:
+Non-interactive:
 ```
-echo "env" | ./hsh
+echo "ls" | ./hsh
 ```
 ⚡️ Example Session
 ```
@@ -125,37 +143,42 @@ write()
 
 getline()
 
-strcmp(), strlen(), strcpy()
-
 malloc(), free()
+
+fork(), execve(), wait()
 
 access()
 
 isatty()
 
-exit()
+stat()
+
+strtok()
+
+strcmp(), strlen()
 
 environ (global variable)
 
 📄 Requirements
 
-Operating System: Ubuntu 20.04 LTS
+Ubuntu 20.04 LTS
 
-Compiler: gcc
-
-Flags:
+gcc with:
 ```
 -Wall -Werror -Wextra -pedantic -std=gnu89
 ```
-Follow Betty coding style.
+Betty style compliance
 
-No memory leaks.
+No memory leaks
 
-Maximum of 5 functions per file.
+Maximum 5 functions per file
 
-All header files must be include-guarded.
+Header files must be include-guarded
 
-## 💬 Conclusion
-The Simple Shell project demonstrates how a basic UNIX command interpreter works.  
-It reads user input, handles built-in commands like exit and env, and interacts with the system environment using C.  
-This project is a practical introduction to system programming and process management — simple, structured, and educational for anyone exploring how real shells operate.
+💬 Conclusion
+
+The Simple Shell project demonstrates how UNIX shells operate behind the scenes.
+It processes user commands, manages processes, handles environment variables, and mimics the behavior of traditional shells.
+
+A clean, foundational project for understanding system programming,
+process control, and UNIX internals — all written in pure C. 🚀
