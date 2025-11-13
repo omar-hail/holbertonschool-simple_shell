@@ -9,6 +9,7 @@
 #include <string.h>
 
 extern char **environ;
+extern int last_status;
 
 /* main loop */
 int shell_loop(char *prog_name);

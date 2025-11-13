@@ -1,15 +1,18 @@
 #include "shell.h"
 
+int last_status = 0;
+
 /**
  * main - Entry point of the simple shell
  * @argc: argument count
  * @argv: argument vector
  *
- * Return: 0 on success
+ * Return: exit status of last command
  */
 int main(int argc, char **argv)
 {
 	(void)argc;
 
-	return (shell_loop(argv[0]));
+	shell_loop(argv[0]);
+	return (last_status);
 }
