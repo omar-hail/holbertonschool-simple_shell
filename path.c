@@ -2,7 +2,7 @@
 
 /**
  * find_command - search for a command in the PATH
- * @command: command name (e.g. "ls")
+ * @command: command name (e.g. "ls", "../hbtn_ls")
  *
  * Return: full path to command, or NULL if not found
  */
@@ -11,8 +11,8 @@ char *find_command(char *command)
 	char *env_path, *path, *dir, *full_path;
 	int len;
 
-	/* if command starts with / or ./ → do not search PATH */
-	if (command[0] == '/' || (command[0] == '.' && command[1] == '/'))
+	/* إذا فيه / في أي مكان → اعتبره مسار مباشر */
+	if (strchr(command, '/') != NULL)
 		return (_strdup(command));
 
 	env_path = _getenv("PATH");
