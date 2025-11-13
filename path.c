@@ -8,19 +8,20 @@
  */
 char *find_command(char *command)
 {
-	char *path = _strdup(getenv("PATH"));
-	char *dir, *full_path;
+	char *env_path, *path, *dir, *full_path;
 	int len;
-
-	if (!path)
-		return (NULL);
 
 	/* if command starts with / or ./ → do not search PATH */
 	if (command[0] == '/' || (command[0] == '.' && command[1] == '/'))
-	{
-		free(path);
 		return (_strdup(command));
-	}
+
+	env_path = _getenv("PATH");
+	if (!env_path)
+		return (NULL);
+
+	path = _strdup(env_path);
+	if (!path)
+		return (NULL);
 
 	dir = strtok(path, ":");
 	while (dir)

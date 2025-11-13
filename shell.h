@@ -13,6 +13,10 @@ extern char **environ;
 /* main loop */
 int shell_loop(char *prog_name);
 
+/* loop helpers */
+ssize_t read_line(char **line, size_t *len);
+void process_line(char *line, char *prog_name);
+
 /* tokenizer */
 char **split_line(char *line);
 
@@ -30,6 +34,10 @@ void builtin_env(void);
 /* env utils */
 void print_environment(void);
 
+/* env utils */
+void print_environment(void);
+char *_getenv(const char *name);
+
 /* string utils */
 int _strcmp(char *s1, char *s2);
 char *_strdup(const char *s);
@@ -39,4 +47,3 @@ int _strlen(char *s);
 void print_error(char *prog, char *cmd);
 
 #endif /* SHELL_H */
-
