@@ -1,6 +1,43 @@
 #include "shell.h"
 
 /**
+ * run_child - executes the command in the child process
+ * @cmd_path: full path of the command
+ * @args: arguments array
+ */
+static void run_child(char *cmd_path, char **args)
+{
+	if (execve(cmd_path, args, environ) == -1)
+	{
+		perror(args[0]);
+		free(cmd_path);
+		exit(EXIT_FAILURE);
+	}
+}
+
+/**
+ * wait_for_child - waits for child and updates last_status
+ */
+static void wait_for_child(void)
+{
+	int status;
+
+	if (wait(&status) == -1)
+	{
+		perror("wait");
+		last_status = 1;
+	}
+	else if (WIFEXITED(status))
+	{
+		last_status = WEXITSTATUS(status);
+	}
+	else
+	{
+		last_status = 1;
+	}
+}
+
+/**
  * execute_command - execute a command using fork + execve
  * @args: command arguments array
  * @prog_name: shell program name (argv[0])
@@ -11,16 +48,14 @@ int execute_command(char **args, char *prog_name)
 {
 	pid_t child_pid;
 	char *cmd_path;
-	int status;
 
 	(void)prog_name;
 
-	/* find command in PATH or as a path */
 	cmd_path = find_command(args[0]);
 	if (!cmd_path)
 	{
-		last_status = 127; /* command not found */
-		return (-1);       /* NO fork */
+		last_status = 127;
+		return (-1);
 	}
 
 	child_pid = fork();
@@ -33,29 +68,9 @@ int execute_command(char **args, char *prog_name)
 	}
 
 	if (child_pid == 0)
-	{
-		if (execve(cmd_path, args, environ) == -1)
-		{
-			perror(args[0]);
-			free(cmd_path);
-			exit(EXIT_FAILURE);
-		}
-	}
+		run_child(cmd_path, args);
 
-	/* parent waits for child */
-	if (wait(&status) == -1)
-	{
-		perror("wait");
-		last_status = 1;
-	}
-	else
-	{
-		if (WIFEXITED(status))
-			last_status = WEXITSTATUS(status);
-		else
-			last_status = 1;
-	}
-
+	wait_for_child();
 	free(cmd_path);
 	return (0);
 }
