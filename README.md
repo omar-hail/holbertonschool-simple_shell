@@ -139,41 +139,41 @@ $
 ```
 🧰 System Calls & Functions Used
 
--write()
+- write()
 
--getline()
+- getline()
 
--malloc(), free()
+- malloc(), free()
 
--fork(), execve(), wait()
+- fork(), execve(), wait()
 
--access()
+- access()
 
--isatty()
+- isatty()
 
--stat()
+- stat()
 
--strtok()
+- strtok()
 
--strcmp(), strlen()
+- strcmp(), strlen()
 
--environ (global variable)
+- environ (global variable)
 
 📄 Requirements
 
--Ubuntu 20.04 LTS
+- Ubuntu 20.04 LTS
 
--gcc with:
+- gcc with:
 ```
 -Wall -Werror -Wextra -pedantic -std=gnu89
 ```
--Betty style compliance
+- Betty style compliance
 
--No memory leaks
+- No memory leaks
 
--Maximum 5 functions per file
+- Maximum 5 functions per file
 
--Header files must be include-guarded
+- Header files must be include-guarded
 
 💬 Conclusion
 
