@@ -1,114 +1,179 @@
 .TH SIMPLE_SHELL 1 "November 2025" "Holberton School" "User Commands"
 .SH NAME
 simple_shell \- a simple UNIX command interpreter
+
 .SH SYNOPSIS
 .B ./hsh
+.RI [commands]
+
 .SH DESCRIPTION
 The
 .B simple_shell
-program is a minimalist UNIX command interpreter written in C.
-It provides a basic prompt and allows the user to type and execute commands.
-The shell was created as part of the Holberton School "The Gates of Shell" project.
+program is a lightweight UNIX command interpreter written in C.  
+It provides an interactive prompt as well as support for non-interactive
+execution through pipes or files.
 
-.PP
-The shell reads commands from standard input using the getline() function,
-removes leading and trailing spaces or tabs, and interprets simple built-in commands.
-If the entered command is not a built-in, the shell attempts to locate it
-within the directories listed in the PATH environment variable.
-
-.PP
-The shell runs in both
-.B interactive
+The shell reads input using
+.BR getline(),
+tokenizes the command into arguments, resolves the executable either
+directly or through the directories listed in
+.BR $PATH ,
+and executes the command in a child process using
+.BR fork()
 and
-.B non-interactive
-modes.
+.BR execve().
 
-.TP
-In interactive mode, it displays the prompt
-.BR "#cisfun$ "
-and waits for user input.
-.TP
-In non-interactive mode, it reads commands from standard input until EOF is reached.
+The shell implements basic built-in commands, handles environment
+variables, prints informative error messages, and exits cleanly on EOF.
 
-.PP
-When the end-of-file (Ctrl+D) is received in interactive mode,
-the shell prints a newline and terminates gracefully.
+.SH FEATURES
+.IP \[bu] 3
+Interactive mode with a custom prompt:
+.B #cisfun$
+.IP \[bu] 3
+Non-interactive mode (supports piping commands via stdin)
+.IP \[bu] 3
+Built-in commands:
+.B exit ,
+.B env
+.IP \[bu] 3
+Command execution with path resolution
+.IP \[bu] 3
+Accurate exit status handling
+.IP \[bu] 3
+EOF (Ctrl+D) detection and graceful exit
+.IP \[bu] 3
+Error messages follow exact required formatting:
+.nf
+./hsh: 1: command: not found
+.fi
 
-.SH BUILT-IN COMMANDS
-The shell provides the following built-in commands:
-
+.SH BUILTINS
 .TP
 .B exit
-Terminate the shell with exit status 0.
+Exit the shell.  
+If no status is provided, the last command status is returned.
 
 .TP
 .B env
-Display the current environment variables, one per line.
+Prints the environment variables, one per line.
 
-.SH FEATURES
-.TP
-* Interactive prompt (#cisfun$)
-.TP
-* Removal of leading and trailing whitespace before command execution
-.TP
-* Built-in support for exit and env commands
-.TP
-* Manual search through PATH directories using access()
-.TP
-* Graceful handling of EOF (Ctrl+D)
-.TP
-* Basic error printing to standard error (for unfound commands)
+.SH USAGE
+.SS Interactive mode
+.nf
+$ ./hsh
+#cisfun$ ls
+#cisfun$ env
+#cisfun$ exit
+$
+.fi
+
+.SS Non-interactive mode
+.nf
+$ echo "ls -l" | ./hsh
+$ cat script.txt | ./hsh
+.fi
+
+.SS EOF handling
+Press Ctrl+D to terminate:
+.nf
+#cisfun$ <Ctrl+D>
+$
+.fi
+
+.SH IMPLEMENTATION DETAILS
+The shell follows this execution flow:
+
+.nf
+1. Display prompt (interactive mode only)
+2. Read input with getline()
+3. Sanitize and tokenize input
+4. Check for built-in commands
+5. Resolve binary using PATH
+6. fork() a child process
+7. Execute command using execve()
+8. Parent waits using wait()
+9. Loop until "exit" or EOF
+.fi
 
 .SH FILES
 .TP
 .B main.c
-Program entry point. Calls the shell loop.
+Program entry point; initializes shell loop.
+
 .TP
 .B loop.c
-Implements the main command loop and prompt display.
+Handles getline(), prompt display, and loop control.
+
 .TP
-.B builtin.c
-Handles built-in commands (exit and env).
+.B tokenizer.c
+Splits command into tokens.
+
 .TP
-.B exec.c
-Provides path searching and validation utilities.
+.B executor.c
+Handles fork(), execve(), wait(), and exit status logic.
+
+.TP
+.B path.c
+Searches directories in $PATH to locate executables.
+
+.TP
+.B builtins.c
+Implements built-ins: exit, env.
+
+.TP
+.B env_utils.c
+Utility functions for environment operations.
+
+.TP
+.B string_utils.c
+Helper string functions.
+
+.TP
+.B errors.c
+Error formatting and printing.
+
 .TP
 .B shell.h
-Contains function prototypes and extern declarations.
+Header file containing prototypes, macros, and globals.
+
+.SH RETURN VALUE
+Returns the exit status of the last executed command.  
+Built-in
+.B exit
+may override this value.
 
 .SH ENVIRONMENT
-The following environment variables affect the behavior of the shell:
+The following environment variables affect the shell:
 
 .TP
 .B PATH
-Specifies the directories searched for executable commands.
-
-.TP
-.B environ
-A global variable used by the env command to print environment variables.
-
-.SH RETURN VALUE
-The shell returns the exit status of the last command executed.
-The builtin command "exit" always terminates with status 0.
+A colon-separated list of directories to search for commands.
 
 .SH EXAMPLES
-Interactive mode:
-.EX
+.nf
 $ ./hsh
+#cisfun$ /bin/ls
 #cisfun$ env
-PATH=/usr/bin:/bin
-PWD=/home/user/simple_shell
-SHLVL=1
 #cisfun$ exit
-.EE
+.fi
 
-Non-interactive mode:
-.EX
-$ echo "env" | ./hsh
-PATH=/usr/bin:/bin
-PWD=/home/user/simple_shell
-SHLVL=1
-.EE
+.nf
+$ echo "/bin/ls" | ./hsh
+.fi
 
-.SH SEE ALSO
-sh(1), bash(1), getline(3), fork(2), execve(2), access(2)
+.SH REQUIREMENTS
+.IP \[bu] 3
+Ubuntu 20.04 LTS
+.IP \[bu] 3
+GCC with flags:
+.B -Wall -Werror -Wextra -pedantic -std=gnu89
+.IP \[bu] 3
+No memory leaks
+.IP \[bu] 3
+Betty coding style enforced
+
+.SH AUTHOR
+Ali Abdullah Summan  
+Omar Hail Alanzi
+
