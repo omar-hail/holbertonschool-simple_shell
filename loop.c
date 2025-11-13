@@ -3,9 +3,9 @@
 /**
  * read_line - reads a line from stdin
  * @line: pointer to buffer
- * @len: pointer to length
+ * @len: pointer to buffer length
  *
- * Return: number of characters read, or -1 on EOF
+ * Return: number of chars read, or -1 on EOF/error
  */
 ssize_t read_line(char **line, size_t *len)
 {
@@ -19,15 +19,15 @@ ssize_t read_line(char **line, size_t *len)
 }
 
 /**
- * process_line - process and execute input line
+ * process_line - tokenize and execute a line
  * @line: input string
- * @prog_name: program name
+ * @prog_name: program name (argv[0])
  */
 void process_line(char *line, char *prog_name)
 {
 	char **args;
 
-	if (line[0] == '\0')
+	if (!line || line[0] == '\0')
 		return;
 
 	args = split_line(line);
@@ -74,6 +74,9 @@ int shell_loop(char *prog_name)
 			line[nread - 1] = '\0';
 
 		process_line(line, prog_name);
+
+		if (should_exit)
+			break;
 	}
 
 	free(line);

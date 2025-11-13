@@ -1,6 +1,7 @@
 #include "shell.h"
 
 int last_status = 0;
+int should_exit = 0;
 
 /**
  * main - Entry point of the simple shell

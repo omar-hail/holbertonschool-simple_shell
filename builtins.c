@@ -24,11 +24,11 @@ int check_builtin(char **args)
 }
 
 /**
- * builtin_exit - exits the shell
+ * builtin_exit - sets exit flag for the shell
  */
 void builtin_exit(void)
 {
-	exit(last_status);
+	should_exit = 1;
 }
 
 /**

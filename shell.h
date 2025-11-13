@@ -10,6 +10,7 @@
 
 extern char **environ;
 extern int last_status;
+extern int should_exit;
 
 /* main loop */
 int shell_loop(char *prog_name);
